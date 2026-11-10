@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal de Clientes — Grupo Albardi</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="#">Grupo Albardi</a>
+      <nav class="nav">
+        <a href="#servicios">Servicios</a>
+        <a href="#contacto">Contacto</a>
+        <a href="login.html">Acceso</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Soluciones web para tu negocio</h1>
+      <p>Desarrollo, mantenimiento e integración de plataformas.</p>
+      <a class="btn btn--primary" href="#contacto">Contáctanos</a>
+    </div>
+  </section>
+
+  <section id="servicios" class="section">
+    <div class="container">
+      <h2>Servicios</h2>
+      <div id="servicios-list" class="cards"></div>
+    </div>
+  </section>
+
+  <section id="contacto" class="section section--alt">
+    <div class="container">
+      <h2>Contacto</h2>
+      <form id="contactForm" class="form" novalidate>
+        <div class="field">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" type="text" />
+          <small class="error" data-for="nombre"></small>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" />
+          <small class="error" data-for="email"></small>
+        </div>
+        <div class="field">
+          <label for="telefono">Teléfono</label>
+          <input id="telefono" name="telefono" type="tel" />
+          <small class="error" data-for="telefono"></small>
+        </div>
+        <div class="field">
+          <label for="mensaje">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" rows="4"></textarea>
+          <small class="error" data-for="mensaje"></small>
+        </div>
+        <button type="submit" class="btn btn--primary">Enviar</button>
+        <p id="formStatus" class="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">© 2026 Grupo Albardi</div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
