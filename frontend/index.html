@@ -1,72 +1,180 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Portal de Clientes de Grupo Albardi: desarrollo web, mantenimiento, integración de APIs y QA para tu negocio.">
+  <meta name="theme-color" content="#1f4e79">
   <title>Portal de Clientes — Grupo Albardi</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f4e79'/%3E%3Cpath d='M9 23 16 9l7 14M12 18h8' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Mejora progresiva: los estilos que dependen de JS solo se aplican si JS está activo. -->
+  <script>document.documentElement.classList.add('js');</script>
+  <script type="module" src="js/app.js"></script>
 </head>
 <body>
-  <header class="header">
-    <div class="container header__inner">
-      <a class="brand" href="#">Grupo Albardi</a>
-      <nav class="nav">
-        <a href="#servicios">Servicios</a>
-        <a href="#contacto">Contacto</a>
-        <a href="login.html">Acceso</a>
+  <a class="skip-link" href="#main">Saltar al contenido principal</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="#inicio">
+        <svg class="brand__logo" viewBox="0 0 32 32" width="36" height="36" aria-hidden="true" focusable="false">
+          <rect width="32" height="32" rx="8" />
+          <path d="M9 23 16 9l7 14M12 18h8" />
+        </svg>
+        <span>Grupo Albardi</span>
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+        <span class="nav-toggle__icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Menú</span>
+      </button>
+
+      <nav class="site-nav" id="primary-nav" aria-label="Principal">
+        <ul class="site-nav__list" role="list">
+          <li><a class="site-nav__link" href="#servicios">Servicios</a></li>
+          <li><a class="site-nav__link" href="#contacto">Contacto</a></li>
+          <li><a class="btn btn--outline btn--sm" href="../backend/auth/login.php">Acceso clientes</a></li>
+        </ul>
       </nav>
     </div>
   </header>
 
-  <section class="hero">
-    <div class="container">
-      <h1>Soluciones web para tu negocio</h1>
-      <p>Desarrollo, mantenimiento e integración de plataformas.</p>
-      <a class="btn btn--primary" href="#contacto">Contáctanos</a>
-    </div>
-  </section>
+  <main id="main" tabindex="-1">
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="container hero__inner">
+        <p class="hero__eyebrow">Portal de Clientes</p>
+        <h1 class="hero__title" id="hero-title">
+          Soluciones web que <span class="hero__highlight">impulsan</span> tu negocio
+        </h1>
+        <p class="hero__lead">
+          Desarrollo, mantenimiento e integración de plataformas con el respaldo de un equipo experto.
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--accent" href="#servicios">Ver servicios</a>
+          <a class="btn btn--ghost" href="#contacto">Contáctanos</a>
+        </div>
+      </div>
+    </section>
 
-  <section id="servicios" class="section">
-    <div class="container">
-      <h2>Servicios</h2>
-      <div id="servicios-list" class="cards"></div>
-    </div>
-  </section>
+    <section class="section" id="servicios" aria-labelledby="servicios-title">
+      <div class="container">
+        <header class="section__header">
+          <p class="section__eyebrow">Lo que hacemos</p>
+          <h2 class="section__title" id="servicios-title">Nuestros servicios</h2>
+          <p class="section__lead">Elige el servicio que necesitas y te enviaremos una propuesta a la medida.</p>
+        </header>
 
-  <section id="contacto" class="section section--alt">
-    <div class="container">
-      <h2>Contacto</h2>
-      <form id="contactForm" class="form" novalidate>
-        <div class="field">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" name="nombre" type="text" />
-          <small class="error" data-for="nombre"></small>
-        </div>
-        <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" />
-          <small class="error" data-for="email"></small>
-        </div>
-        <div class="field">
-          <label for="telefono">Teléfono</label>
-          <input id="telefono" name="telefono" type="tel" />
-          <small class="error" data-for="telefono"></small>
-        </div>
-        <div class="field">
-          <label for="mensaje">Mensaje</label>
-          <textarea id="mensaje" name="mensaje" rows="4"></textarea>
-          <small class="error" data-for="mensaje"></small>
-        </div>
-        <button type="submit" class="btn btn--primary">Enviar</button>
-        <p id="formStatus" class="status"></p>
-      </form>
-    </div>
-  </section>
+        <div class="services" id="services" aria-busy="true"></div>
+        <noscript>
+          <p class="notice">Activa JavaScript para ver el catálogo de servicios.</p>
+        </noscript>
+      </div>
+    </section>
 
-  <footer class="footer">
-    <div class="container">© 2026 Grupo Albardi</div>
+    <section class="section section--alt" id="contacto" aria-labelledby="contacto-title">
+      <div class="container contact">
+        <div class="contact__intro">
+          <p class="section__eyebrow">Hablemos</p>
+          <h2 class="section__title" id="contacto-title">Contacto</h2>
+          <p>Cuéntanos sobre tu proyecto y un asesor se pondrá en contacto contigo.</p>
+          <ul class="contact__list" role="list">
+            <li>Respuesta en menos de 24 horas hábiles.</li>
+            <li>Propuesta adaptada a tus objetivos y presupuesto.</li>
+            <li>Acompañamiento durante todo el proyecto.</li>
+          </ul>
+        </div>
+
+        <form class="form" id="contact-form" novalidate>
+          <p class="form__note">Todos los campos son obligatorios.</p>
+
+          <div class="field">
+            <label class="field__label" for="nombre">Nombre completo</label>
+            <input class="field__input" id="nombre" name="nombre" type="text"
+                   autocomplete="name" maxlength="100" required
+                   aria-describedby="nombre-error">
+            <p class="field__error" id="nombre-error"></p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="email">Correo electrónico</label>
+            <input class="field__input" id="email" name="email" type="email"
+                   autocomplete="email" maxlength="150" required
+                   aria-describedby="email-error">
+            <p class="field__error" id="email-error"></p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="telefono">Teléfono</label>
+            <p class="field__hint" id="telefono-hint">10 dígitos, sin espacios ni lada internacional. Ej.: 5512345678</p>
+            <input class="field__input" id="telefono" name="telefono" type="tel"
+                   inputmode="numeric" autocomplete="tel-national" required
+                   aria-describedby="telefono-hint telefono-error" data-digits-only>
+            <p class="field__error" id="telefono-error"></p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="mensaje">Mensaje</label>
+            <textarea class="field__input field__input--textarea" id="mensaje" name="mensaje"
+                      rows="5" maxlength="1000" required
+                      aria-describedby="mensaje-error"></textarea>
+            <p class="field__error" id="mensaje-error"></p>
+          </div>
+
+          <button class="btn btn--primary btn--block" type="submit">Enviar mensaje</button>
+          <p class="form__status" role="status" data-form-status></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <div>
+        <a class="brand brand--light" href="#inicio">
+          <svg class="brand__logo" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true" focusable="false">
+            <rect width="32" height="32" rx="8" />
+            <path d="M9 23 16 9l7 14M12 18h8" />
+          </svg>
+          <span>Grupo Albardi</span>
+        </a>
+        <p class="site-footer__tagline">Tecnología a la medida de tu negocio.</p>
+      </div>
+
+      <nav aria-label="Pie de página">
+        <ul class="site-footer__links" role="list">
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+          <li><a href="../backend/auth/login.php">Acceso clientes</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="container site-footer__bottom">
+      <p><small>&copy; <span data-current-year>2026</span> Grupo Albardi. Todos los derechos reservados.</small></p>
+    </div>
   </footer>
 
-  <script src="js/app.js"></script>
+  <!-- Plantillas: el marcado vive en HTML y JS solo las clona y rellena con textContent. -->
+  <template id="service-card-template">
+    <li class="card">
+      <span class="card__badge" data-slot="badge" aria-hidden="true"></span>
+      <h3 class="card__title" data-slot="nombre"></h3>
+      <p class="card__text" data-slot="descripcion"></p>
+      <div class="card__footer">
+        <p class="card__price" data-slot="precio"></p>
+        <a class="btn btn--primary btn--sm" href="#contacto" data-action="interest">Me interesa</a>
+      </div>
+    </li>
+  </template>
+
+  <template id="service-skeleton-template">
+    <li class="card card--skeleton" aria-hidden="true">
+      <span class="skeleton skeleton--badge"></span>
+      <span class="skeleton skeleton--title"></span>
+      <span class="skeleton skeleton--text"></span>
+      <span class="skeleton skeleton--text skeleton--short"></span>
+    </li>
+  </template>
 </body>
 </html>
