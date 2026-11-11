@@ -1,0 +1,13 @@
+{
+  "name": "albardi-portal-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend del Portal de Clientes de Grupo Albardi (JS vanilla, sin dependencias).",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
