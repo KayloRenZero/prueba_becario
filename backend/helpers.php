@@ -155,6 +155,12 @@ function postString(string $key): string {
     return is_string($value) ? $value : '';
 }
 
+/** Igual que postString() pero para $_GET: "?q[]=x" llega como array y se trata como ausente. */
+function queryString(string $key, string $default = ''): string {
+    $value = $_GET[$key] ?? $default;
+    return is_string($value) ? $value : $default;
+}
+
 function redirect(string $location): void {
     header('Location: ' . $location, true, 303);
     exit;
