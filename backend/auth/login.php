@@ -25,7 +25,8 @@ if (isPost()) {
         $authenticated = authenticate(getDB(), $email, $password);
         if ($authenticated !== null) {
             loginUser($authenticated);
-            redirect(homePathFor($authenticated['rol']));
+            // Vuelve a la página que pidió antes del login (p. ej. "Contratar" en el sitio).
+            redirect(takeIntendedUrl() ?? homePathFor($authenticated['rol']));
         }
         // Mensaje genérico: no se revela si falló el correo o la contraseña.
         http_response_code(401);
