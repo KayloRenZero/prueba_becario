@@ -5,6 +5,7 @@
  */
 
 const API_URL = '../backend/api/servicios.php';
+const CHECKOUT_URL = '../backend/pagos/checkout.php';
 const REQUEST_TIMEOUT_MS = 8000;
 const SKELETON_COUNT = 3;
 const MAX_STAGGER_STEPS = 8; // limita el retraso acumulado de la animación escalonada
@@ -20,6 +21,17 @@ const priceFormatter = new Intl.NumberFormat('es-MX', { style: 'currency', curre
 export function formatPrice(value) {
   const amount = Number.parseFloat(value);
   return Number.isFinite(amount) ? `${priceFormatter.format(amount)} MXN` : 'Precio a consultar';
+}
+
+/**
+ * URL para contratar un servicio. Si no hay sesión, el checkout pide iniciarla
+ * y después regresa a esta misma compra.
+ * @param {{ id?: unknown }} service
+ * @returns {string|null} null si el id no es un entero positivo.
+ */
+export function checkoutUrl(service) {
+  const id = service?.id;
+  return Number.isInteger(id) && id > 0 ? `${CHECKOUT_URL}?servicio_id=${id}` : null;
 }
 
 /**
@@ -141,6 +153,15 @@ function createServiceCard(template, service, index, onInterest) {
   cta.setAttribute('aria-label', `Me interesa: ${nombre}`);
   if (onInterest) {
     cta.addEventListener('click', () => onInterest(service));
+  }
+
+  const hireLink = card.querySelector('[data-action="hire"]');
+  const hireUrl = checkoutUrl(service);
+  if (hireUrl) {
+    hireLink.href = hireUrl;
+    hireLink.setAttribute('aria-label', `Contratar: ${nombre}`);
+  } else {
+    hireLink.remove(); // sin un id válido no hay compra a la cual enlazar
   }
 
   return card;
