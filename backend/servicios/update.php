@@ -1,46 +1,45 @@
 <?php
 // backend/servicios/update.php
 require_once __DIR__ . '/../helpers.php';
-requireLogin();
-$pdo = getDB();
-$id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
-$stmt = $pdo->prepare('SELECT * FROM servicios WHERE id = :id');
-$stmt->execute([':id' => $id]);
-$serv = $stmt->fetch();
-if (!$serv) { http_response_code(404); echo 'No encontrado'; exit; }
+require_once __DIR__ . '/../lib/servicios.php';
 
-$error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+requireAdmin();
+
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+$pdo = getDB();
+$service = $id ? findService($pdo, $id) : null;
+
+if ($service === null) {
+    renderErrorPage(404, 'Servicio no encontrado', 'El servicio que buscas no existe o fue eliminado.');
+}
+
+$values = $service;
+$errors = [];
+
+if (isPost()) {
+    ['data' => $values, 'errors' => $errors] = validateService($_POST);
+
     if (!verifyCsrf($_POST['csrf'] ?? null)) {
-        $error = 'Token inválido.';
+        http_response_code(403);
+        $errors = ['form' => 'El formulario expiró. Vuelve a enviarlo.'];
+    } elseif ($errors === []) {
+        updateService($pdo, $id, $values);
+        flash('success', sprintf('Cambios guardados en «%s».', $values['nombre']));
+        redirect('index.php');
     } else {
-        $nombre = trim($_POST['nombre'] ?? '');
-        $desc = trim($_POST['descripcion'] ?? '');
-        $precio = (float)($_POST['precio'] ?? 0);
-        $activo = isset($_POST['activo']) ? 1 : 0;
-        if ($nombre === '' || $precio < 0) {
-            $error = 'Datos inválidos.';
-        } else {
-            $up = $pdo->prepare('UPDATE servicios SET nombre=:n, descripcion=:d, precio=:p, activo=:a WHERE id=:id');
-            $up->execute([':n'=>$nombre,':d'=>$desc,':p'=>$precio,':a'=>$activo,':id'=>$id]);
-            header('Location: index.php');
-            exit;
-        }
+        http_response_code(422);
     }
 }
+
+$pageTitle = 'Editar servicio';
+$submitLabel = 'Guardar cambios';
+require __DIR__ . '/../views/layout/header.php';
 ?>
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Editar servicio</title><link rel="stylesheet" href="../../frontend/css/styles.css"></head>
-<body><section class="section"><div class="container">
-  <h2>Editar servicio</h2>
-  <?php if ($error): ?><p style="color:#c0392b"><?php echo e($error); ?></p><?php endif; ?>
-  <form method="post" class="form">
-    <input type="hidden" name="csrf" value="<?php echo e(csrfToken()); ?>">
-    <input type="hidden" name="id" value="<?php echo (int)$serv['id']; ?>">
-    <div class="field"><label>Nombre</label><input name="nombre" value="<?php echo e($serv['nombre']); ?>" required></div>
-    <div class="field"><label>Descripción</label><textarea name="descripcion" rows="3"><?php echo e($serv['descripcion']); ?></textarea></div>
-    <div class="field"><label>Precio</label><input name="precio" type="number" step="0.01" value="<?php echo e($serv['precio']); ?>" required></div>
-    <div class="field"><label><input type="checkbox" name="activo" <?php echo $serv['activo']?'checked':''; ?>> Activo</label></div>
-    <button class="btn btn--primary" type="submit">Guardar</button>
-    <a href="index.php">Cancelar</a>
-  </form>
-</div></section></body></html>
+<a class="back-link" href="index.php">← Servicios</a>
+<div class="page-header">
+  <h1 class="page-header__title">Editar servicio</h1>
+</div>
+<section class="panel panel--narrow">
+  <?php require __DIR__ . '/../views/servicios/form.php'; ?>
+</section>
+<?php require __DIR__ . '/../views/layout/footer.php'; ?>
