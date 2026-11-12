@@ -129,9 +129,32 @@ function homePathFor(string $rol): string {
 
 function requireLogin(): void {
     if (currentUser() === null) {
+        rememberIntendedUrl();
         flash('info', 'Inicia sesión para continuar.');
         redirect(LOGIN_PAGE);
     }
+}
+
+/**
+ * Guarda la página (GET) que se pidió sin sesión, para volver a ella tras el login.
+ * Se guarda en la sesión y no en un parámetro "?next=" que cualquiera podría
+ * manipular para redirigir a otro sitio (redirección abierta).
+ */
+function rememberIntendedUrl(): void {
+    $uri = (string) ($_SERVER['REQUEST_URI'] ?? '');
+    // Solo rutas locales con UNA barra inicial: "//otro-sitio.com" llevaría a otro dominio.
+    $isLocalPath = str_starts_with($uri, '/') && !str_starts_with($uri, '//') && !str_contains($uri, '\\');
+    if (!isPost() && $isLocalPath) {
+        $_SESSION['intended_url'] = $uri;
+    }
+}
+
+/** Devuelve (y olvida) la página guardada por rememberIntendedUrl(), si la hay. */
+function takeIntendedUrl(): ?string {
+    startSession();
+    $url = $_SESSION['intended_url'] ?? null;
+    unset($_SESSION['intended_url']);
+    return is_string($url) ? $url : null;
 }
 
 function requireAdmin(): void {

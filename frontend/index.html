@@ -163,7 +163,10 @@
       <p class="card__text" data-slot="descripcion"></p>
       <div class="card__footer">
         <p class="card__price" data-slot="precio"></p>
-        <a class="btn btn--primary btn--sm" href="#contacto" data-action="interest">Me interesa</a>
+        <div class="card__actions">
+          <a class="btn btn--outline btn--sm" href="#contacto" data-action="interest">Me interesa</a>
+          <a class="btn btn--primary btn--sm" href="../backend/pagos/checkout.php" data-action="hire">Contratar</a>
+        </div>
       </div>
     </li>
   </template>
