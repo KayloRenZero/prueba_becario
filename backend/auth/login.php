@@ -1,59 +1,67 @@
 <?php
 // backend/auth/login.php
 require_once __DIR__ . '/../helpers.php';
+require_once __DIR__ . '/../lib/usuarios.php';
 
-startSession();
+$user = currentUser();
+if ($user !== null) {
+    redirect(homePathFor($user['rol']));
+}
+
+$email = '';
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $token = $_POST['csrf'] ?? '';
+if (isPost()) {
+    $email = trim(postString('email'));
+    $password = postString('password');
 
-    if (!verifyCsrf($token)) {
-        $error = 'Token inválido.';
+    if (!verifyCsrf($_POST['csrf'] ?? null)) {
+        http_response_code(403);
+        $error = 'Tu formulario expiró. Recarga la página e inténtalo de nuevo.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
+        http_response_code(422);
+        $error = 'Ingresa un correo electrónico válido y tu contraseña.';
     } else {
-        $stmt = getDB()->prepare('SELECT id, nombre, password, rol FROM usuarios WHERE email = :email LIMIT 1');
-        $stmt->execute([':email' => $email]);
-        $user = $stmt->fetch();
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['nombre'];
-            $_SESSION['user_rol'] = $user['rol'];
-            header('Location: ../servicios/index.php');
-            exit;
-        } else {
-            $error = 'Credenciales incorrectas.';
+        $authenticated = authenticate(getDB(), $email, $password);
+        if ($authenticated !== null) {
+            loginUser($authenticated);
+            redirect(homePathFor($authenticated['rol']));
         }
+        // Mensaje genérico: no se revela si falló el correo o la contraseña.
+        http_response_code(401);
+        $error = 'Correo o contraseña incorrectos.';
     }
 }
+
+$pageTitle = 'Iniciar sesión';
+require __DIR__ . '/../views/layout/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Login — Grupo Albardi</title>
-  <link rel="stylesheet" href="../../frontend/css/styles.css">
-</head>
-<body>
-  <section class="section">
-    <div class="container">
-      <h2>Iniciar sesión</h2>
-      <?php if ($error): ?><p style="color:#c0392b"><?php echo e($error); ?></p><?php endif; ?>
-      <form method="post" class="form">
-        <input type="hidden" name="csrf" value="<?php echo e(csrfToken()); ?>">
-        <div class="field">
-          <label>Email</label>
-          <input type="email" name="email" required>
-        </div>
-        <div class="field">
-          <label>Contraseña</label>
-          <input type="password" name="password" required>
-        </div>
-        <button class="btn btn--primary" type="submit">Entrar</button>
-      </form>
-      <p><a href="../../frontend/index.html">Volver</a></p>
+<section class="auth-card" aria-labelledby="login-title">
+  <h1 class="auth-card__title" id="login-title">Iniciar sesión</h1>
+  <p class="auth-card__lead">Accede al portal de clientes de Grupo Albardi.</p>
+
+  <?php if ($error !== ''): ?>
+    <p class="alert alert--error" role="alert"><?= e($error) ?></p>
+  <?php endif; ?>
+
+  <form class="admin-form" method="post">
+    <?= csrfField() ?>
+
+    <div class="field">
+      <label class="field__label" for="email">Correo electrónico</label>
+      <input class="field__input" id="email" name="email" type="email" maxlength="150"
+             autocomplete="username" required value="<?= e($email) ?>"<?= $email === '' ? ' autofocus' : '' ?>>
     </div>
-  </section>
-</body>
-</html>
+
+    <div class="field">
+      <label class="field__label" for="password">Contraseña</label>
+      <input class="field__input" id="password" name="password" type="password"
+             autocomplete="current-password" required<?= $email !== '' ? ' autofocus' : '' ?>>
+    </div>
+
+    <button class="btn btn--primary btn--block" type="submit">Entrar</button>
+  </form>
+
+  <p class="auth-card__back"><a href="../../frontend/index.html">← Volver al sitio</a></p>
+</section>
+<?php require __DIR__ . '/../views/layout/footer.php'; ?>

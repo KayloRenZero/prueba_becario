@@ -1,0 +1,4 @@
+# Archivos de soporte: solo se incluyen desde PHP, nunca se sirven por HTTP.
+<FilesMatch "^(config|config\.example|db|helpers)\.php$">
+    Require all denied
+</FilesMatch>

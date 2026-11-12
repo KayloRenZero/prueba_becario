@@ -12,11 +12,11 @@ function getDB(): PDO {
             $pdo = new PDO($dsn, DB_USER, DB_PASS, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_EMULATE_PREPARES => false, // prepared statements reales en el servidor
             ]);
         } catch (PDOException $e) {
-            http_response_code(500);
-            exit('Error de conexión a la base de datos.');
+            error_log('[db] Fallo de conexión: ' . $e->getMessage());
+            throw new RuntimeException('No se pudo conectar a la base de datos.');
         }
     }
     return $pdo;
